@@ -6,8 +6,9 @@ TumblrPhotoUploadr
 A simple tool for uploading all the photos in a directory to Tumblr. It posts them at the date and time they were created, and can add `#tags` to all posts if desired. 
 """
 
-import readline, glob, os
-from os.path import isdir,expanduser
+import readline, glob, os, tumblr, pytumblr, yaml, time
+from os.path import isdir,expanduser,getctime
+from utils.getcreationdate import get_osx_creation_time
 
 def main():
 	# !LET'S GET STARTED
@@ -18,6 +19,8 @@ def main():
 	print ('\____/ .__/_/\___/\_,_/\_,_/_/   ')
 	print ('    /_/                          ')
 	print ('=================================')
+	
+	# !⚠️TODO: Move Tumblr API up front, so fail exits
 	
 	# !GET DIRECTORY
 	num = 0
@@ -44,16 +47,44 @@ def main():
 		raise SystemExit
 	
 	# !CONNECT TO TUMBLR
+	apikeys = yaml.load(open(expanduser('~/.tumblr')))
+	client = pytumblr.TumblrRestClient(
+	    apikeys['consumer_key'],
+	    apikeys['consumer_secret'],
+	    apikeys['oauth_token'],
+	    apikeys['oauth_token_secret'],
+	)
+
+	# !⚠️TODO: Add try/fail for connection
+	json = client.info()
+	username = json['user']['name']
+	blogs = json['user']['blogs']
+	
+	# !SELECT BLOG
+	print ('----------------------------------')
+	print 'Choose a blog to post to:'
+	for index, blog in enumerate(blogs):
+		print '[{}] {}'.format(index, blog['title'])
+	blogId = int(raw_input('Enter number: '))
+	blog = blogs[blogId]
 	
 	# !UPLOAD IMAGES
 	print ('----------------------------------')
-	for file in glob.glob("*.JPG"):
+	print ('UPLOADING to {}'.format(blog['title']))
+	for index, file in enumerate(glob.glob("*.JPG")):
+		# !⚠️TODO: Uploading error handling
 		print('Uploading {}...'.format(file))
-		# !⚠️TODO: The uploading stuff!
+		client.create_photo(
+			blog['name'],
+			state="published",
+			data=os.path.join(directory, file),
+			date=time.ctime(os.path.getctime(file))
+		)
+		# !⚠️TODO: Add delay between uploads?
 	
 	#blog = input('Which blog?: ')
 	print ('----------------------------------')
-	print ('THANKS!')
-	print ('Uploaded {} files from \'{}\'.'.format(num, directory))
+	print ('SUCCESS!')
+	print ('Uploaded {} files from \'{}\' to {}.'.format(num, directory, blog['title']))
  
 if __name__ == '__main__': main()
