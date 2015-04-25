@@ -1,0 +1,6 @@
+PyTumblr==0.0.6
+PyYAML==3.11
+httplib2==0.9.1
+httpretty==0.8.8
+oauth2==1.5.211
+wsgiref==0.1.2
