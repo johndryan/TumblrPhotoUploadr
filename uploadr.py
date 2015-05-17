@@ -10,6 +10,10 @@ import readline, glob, os, tumblr, pytumblr, yaml, time
 from os.path import isdir,expanduser,getctime
 from utils.getcreationdate import get_osx_creation_time
 
+# !SET VARIABLES
+FILETYPES = ['*.jpg','*.jpeg','*.JPG','*.JPEG','*.png','*.PNG','*.gif','*.GIF']
+
+
 def main():
 	# !LET'S GET STARTED
 	print ('=================================')
@@ -24,6 +28,7 @@ def main():
 	
 	# !GET DIRECTORY
 	num = 0
+	files = []
 	while num <= 0:
 		# !⚠️IDEA: Possible to add tab auto-completion
 	    directory = raw_input('Directory to upload from: ')
@@ -33,7 +38,9 @@ def main():
 	    	# Check for images
 	    	os.chdir(directory)
 	    	# !⚠️TODO: Check for other image types
-	    	num = len(glob.glob("*.JPG"))
+	    	for types in FILETYPES:
+	    		files += glob.glob(types)
+	    	num = len(files)
 	    	if num <= 0:
 	    		print 'No images found. Try another directory.'
 	    else:
@@ -77,7 +84,7 @@ def main():
 	# !UPLOAD IMAGES
 	print ('----------------------------------')
 	print ('UPLOADING to {}'.format(blog['title']))
-	for index, file in enumerate(glob.glob("*.JPG")):
+	for index, file in enumerate(files):
 		# !⚠️TODO: Uploading error handling
 		print('Uploading {}...'.format(file))
 		client.create_photo(
