@@ -78,7 +78,8 @@ def main():
 			blog['name'],
 			state="published",
 			data=os.path.join(directory, file),
-			date=time.ctime(os.path.getctime(file))
+			date=time.ctime(os.path.getctime(file)),
+			slug=file
 		)
 		# !⚠️TODO: Add delay between uploads?
 	
