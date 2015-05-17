@@ -65,9 +65,15 @@ def main():
 	print 'Choose a blog to post to:'
 	for index, blog in enumerate(blogs):
 		print '[{}] {}'.format(index, blog['title'])
+	# !⚠️TODO: Try/fail inputs gracefully
 	blogId = int(raw_input('Enter number: '))
 	blog = blogs[blogId]
 	
+	# !CREATE DIR FOR UPLOADED IMAGES
+	uploadedfolder = os.path.join(directory, '_uploaded')
+	if not os.path.exists(uploadedfolder):
+		os.makedirs(uploadedfolder)
+    
 	# !UPLOAD IMAGES
 	print ('----------------------------------')
 	print ('UPLOADING to {}'.format(blog['title']))
@@ -81,6 +87,8 @@ def main():
 			date=time.ctime(os.path.getctime(file)),
 			slug=file
 		)
+		# Move to subfolder
+		os.rename(os.path.join(directory, file), os.path.join(uploadedfolder, file))
 		# !⚠️TODO: Add delay between uploads?
 	
 	#blog = input('Which blog?: ')
