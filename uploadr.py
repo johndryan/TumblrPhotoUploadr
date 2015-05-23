@@ -91,7 +91,7 @@ def main():
 			blog['name'],
 			state="published",
 			data=os.path.join(directory, file),
-			date=time.ctime(os.path.getctime(file)),
+			date=time.ctime(os.path.getmtime(file)),
 			slug=file
 		)
 		# Move to subfolder
